@@ -20,6 +20,18 @@ describe("Footer", () => {
     }
   });
 
+  it("renders the tagline below the Knodia logo", () => {
+    render(<Footer />);
+
+    const logo = screen.getByRole("img", { name: "Knodia" });
+    const tagline = screen.getByText(
+      "The Italian national proposal for cross-border interoperability",
+    );
+    expect(logo.compareDocumentPosition(tagline)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
+  });
+
   it("does not render the Company Details link", () => {
     render(<Footer />);
 

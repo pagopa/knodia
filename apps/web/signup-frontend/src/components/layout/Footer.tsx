@@ -26,11 +26,17 @@ export function Footer() {
     <footer className="w-full bg-deep-violet pt-[60px] pb-12">
       <div className="mx-auto flex w-full max-w-(--header-shell-max) items-start justify-between px-(--header-inline-padding)">
         <div className="flex h-[210px] flex-col justify-between">
-          <img
-            alt="Knodia"
-            className="h-(--header-logo-height) w-(--header-logo-width)"
-            src={knodiaLogoWhite}
-          />
+          <div>
+            <img
+              alt="Knodia"
+              className="h-(--header-logo-height) w-(--header-logo-width)"
+              src={knodiaLogoWhite}
+            />
+            <p className="mt-4 font-body text-[16px] leading-[24px] font-normal text-neutral-white">
+              The Italian national proposal for <br />
+              cross-border interoperability
+            </p>
+          </div>
           <div className="flex items-center gap-6 text-neutral-white">
             <span className="font-body text-[14px] leading-[20px] font-normal tracking-[0.35px] uppercase">
               © 2026 Knodia
@@ -76,7 +82,7 @@ export function Footer() {
             <LogoLink
               alt="Logo Dipartimento per la trasformazione digitale"
               href="https://innovazione.gov.it/"
-              imgClassName="h-[33px] w-auto"
+              imgClassName="h-[34px] w-[219px]"
               src={logoDtdExtended}
               title="Go to Dipartimento per la trasformazione digitale website"
             />
