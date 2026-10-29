@@ -38,3 +38,9 @@ pnpm multinode:start
 pnpm multinode:stop
 pnpm multinode:destroy
 ```
+
+## Licensing
+
+This project is licensed under the terms of the **European Union Public Licence version 1.2 (EUPL-1.2)**.
+The full text of the license can be found in the [LICENSE](LICENSE) file.
+Please see the [AUTHORS](AUTHORS) file for the copyright notice.
