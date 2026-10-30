@@ -1,6 +1,7 @@
 {
   "name": "knodia-monorepo",
   "private": true,
+  "license": "EUPL-1.2",
   "scripts": {
     "typecheck": "turbo run typecheck",
     "start": "NODE_OPTIONS='--max-old-space-size=150' turbo run start",
