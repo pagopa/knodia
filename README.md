@@ -44,4 +44,7 @@ pnpm multinode:destroy
 This project is licensed under the terms of the **European Union Public Licence version 1.2 (EUPL-1.2)**.
 The full text of the license can be found in the [LICENSE](LICENSE) file.
 Please see the [AUTHORS](AUTHORS) file for the copyright notice.
-Logos and other trademarks are not covered by this license.
+
+### Trademarks and logos
+
+The project name, official logos, branding assets, and trademarks contained in this repository (specifically in the `apps/web/signup-frontend/src/assets` directory) are NOT covered by the European Union Public Licence version 1.2 (EUPL-1.2). All rights, title, and interest in them remain the exclusive property of their respective owners.
