@@ -42,7 +42,7 @@ catalog:
   "@fastify/formbody": 8.0.2
   "@fastify/request-context": 6.2.1
   "@fastify/swagger": 9.7.0
-  "@fastify/swagger-ui": 5.2.4
+  "@fastify/swagger-ui": 5.2.6
   "@fontsource-variable/instrument-sans": 5.2.8
   "@fontsource-variable/inter": 5.2.8
   "@fontsource-variable/manrope": 5.2.8
